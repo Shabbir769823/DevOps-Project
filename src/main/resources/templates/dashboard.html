@@ -69,31 +69,37 @@
         <!-- Statistics Row -->
         <div class="row g-4 mb-5">
             <div class="col-md-4">
-                <div class="glass-card stat-widget text-center">
-                    <div class="stat-icon"><i class="bi bi-people"></i></div>
-                    <div class="stat-value" th:text="${employeeCount}">0</div>
-                    <div class="stat-label">Total Employees Managed</div>
-                </div>
+                <a th:href="@{/employees}" class="text-decoration-none text-reset">
+                    <div class="glass-card stat-widget text-center">
+                        <div class="stat-icon"><i class="bi bi-people"></i></div>
+                        <div class="stat-value" th:text="${employeeCount}">0</div>
+                        <div class="stat-label">Total Employees Managed</div>
+                    </div>
+                </a>
             </div>
             <div class="col-md-4">
-                <div class="glass-card stat-widget text-center">
-                    <div class="stat-icon text-warning"><i class="bi bi-card-checklist text-warning"></i></div>
-                    <div sec:authorize="hasRole('ADMIN')">
-                        <div class="stat-value text-warning" th:text="${activeTaskCount}">0</div>
-                        <div class="stat-label">Active Tasks (Assigned)</div>
+                <a th:href="@{/tasks}" class="text-decoration-none text-reset">
+                    <div class="glass-card stat-widget text-center">
+                        <div class="stat-icon text-warning"><i class="bi bi-card-checklist text-warning"></i></div>
+                        <div sec:authorize="hasRole('ADMIN')">
+                            <div class="stat-value text-warning" th:text="${activeTaskCount}">0</div>
+                            <div class="stat-label">Active Tasks (Assigned)</div>
+                        </div>
+                        <div sec:authorize="!hasRole('ADMIN')">
+                            <div class="stat-value text-warning" th:text="${pendingTaskCount}">0</div>
+                            <div class="stat-label">My Pending Tasks</div>
+                        </div>
                     </div>
-                    <div sec:authorize="!hasRole('ADMIN')">
-                        <div class="stat-value text-warning" th:text="${pendingTaskCount}">0</div>
-                        <div class="stat-label">My Pending Tasks</div>
-                    </div>
-                </div>
+                </a>
             </div>
             <div class="col-md-4">
-                <div class="glass-card stat-widget text-center">
-                    <div class="stat-icon text-success"><i class="bi bi-check-circle"></i></div>
-                    <div class="stat-value text-success">UP</div>
-                    <div class="stat-label">Application Health Check</div>
-                </div>
+                <a th:href="@{/actuator/health}" target="_blank" class="text-decoration-none text-reset">
+                    <div class="glass-card stat-widget text-center">
+                        <div class="stat-icon text-success"><i class="bi bi-check-circle"></i></div>
+                        <div class="stat-value text-success">UP</div>
+                        <div class="stat-label">Application Health Check</div>
+                    </div>
+                </a>
             </div>
         </div>
 
