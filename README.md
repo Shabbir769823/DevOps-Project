@@ -96,6 +96,6 @@ To run the application locally on your machine:
     mvn clean spring-boot:run
     ```
 4.  **Access App**:
-    *   Open browser: `http://localhost:8080`
-    *   Exposed Actuator Health Check: `http://localhost:8080/actuator/health`
-    *   Exposed Prometheus Metrics: `http://localhost:8080/actuator/prometheus`
+    *   Open browser: `http://localhost:8080` (or `http://localhost:8081` if port 8080 is occupied, e.g., by Jenkins)
+    *   Exposed Actuator Health Check: `http://localhost:8080/actuator/health` (or port 8081)
+    *   Exposed Prometheus Metrics: `http://localhost:8080/actuator/prometheus` (or port 8081)
