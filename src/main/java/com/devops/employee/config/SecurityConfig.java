@@ -43,6 +43,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/login", "/register", "/css/**", "/js/**").permitAll()
                 .requestMatchers("/actuator/**").permitAll() // Expose Actuator to Prometheus
+                .requestMatchers("/admin/**").hasRole("ADMIN") // Restrict admin tools to admin role
                 .requestMatchers("/employees/delete/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )

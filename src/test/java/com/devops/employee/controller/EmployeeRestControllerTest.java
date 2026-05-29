@@ -4,6 +4,9 @@ import com.devops.employee.model.Employee;
 import com.devops.employee.repository.UserRepository;
 import com.devops.employee.repository.RoleRepository;
 import com.devops.employee.service.EmployeeService;
+import com.devops.employee.service.UserService;
+import com.devops.employee.service.NotificationService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -29,6 +32,15 @@ class EmployeeRestControllerTest {
 
     @MockBean
     private EmployeeService employeeService;
+
+    @MockBean
+    private UserService userService;
+
+    @MockBean
+    private NotificationService notificationService;
+
+    @MockBean
+    private PasswordEncoder passwordEncoder;
 
     // Mocking repositories referenced in SecurityConfig UserDetailsService definition
     @MockBean
