@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - DevOps Employee Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom py-3 mb-5">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" th:href="@{/dashboard}">
+                <i class="bi bi-cpu text-primary fs-3 me-2"></i>
+                <span class="fw-bold">DevOps<span>Portal</span></span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/dashboard}"><i class="bi bi-speedometer2 me-1"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/employees}"><i class="bi bi-people me-1"></i> Employees</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/profile}"><i class="bi bi-person-circle me-1"></i> Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/chat}"><i class="bi bi-chat-dots me-1"></i> Messages <span id="chat-badge" class="badge bg-danger rounded-pill d-none">0</span></a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center text-secondary">
+                    <span class="me-3" sec:authorize="isAuthenticated()">
+                        Welcome, <strong class="text-white" sec:authentication="name">User</strong>
+                        <span class="badge badge-admin ms-1" sec:authorize="hasRole('ADMIN')">Admin</span>
+                        <span class="badge badge-user ms-1" sec:authorize="!hasRole('ADMIN')">User</span>
+                    </span>
+                    <form th:action="@{/logout}" method="post">
+                        <button type="submit" class="btn btn-outline-custom btn-sm"><i class="bi bi-box-arrow-right me-1"></i> Logout</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container pb-5">
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1 class="fw-bold mb-1">System Dashboard</h1>
+                <p class="text-secondary">Real-time status of "Automated Java Web App Deployment using CI/CD Pipeline"</p>
+            </div>
+        </div>
+
+        <!-- Statistics Row -->
+        <div class="row g-4 mb-5">
+            <div class="col-md-4">
+                <div class="glass-card stat-widget text-center">
+                    <div class="stat-icon"><i class="bi bi-people"></i></div>
+                    <div class="stat-value" th:text="${employeeCount}">0</div>
+                    <div class="stat-label">Total Employees Managed</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="glass-card stat-widget text-center">
+                    <div class="stat-icon text-success"><i class="bi bi-check-circle"></i></div>
+                    <div class="stat-value text-success">UP</div>
+                    <div class="stat-label">Application Health Check</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="glass-card stat-widget text-center">
+                    <div class="stat-icon text-warning"><i class="bi bi-activity"></i></div>
+                    <div class="stat-value text-warning">Active</div>
+                    <div class="stat-label">Prometheus Metric Collector</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- User Information Panel -->
+            <div class="col-lg-6">
+                <div class="glass-card p-4 h-100">
+                    <h3 class="fw-bold mb-4"><i class="bi bi-shield-lock text-primary me-2"></i>Security & Identity</h3>
+                    <table class="table table-borderless text-white mb-0">
+                        <tbody>
+                            <tr>
+                                <td class="text-secondary ps-0 py-2">Username</td>
+                                <td class="fw-semibold py-2" th:text="${user != null ? user.username : 'admin'}">admin</td>
+                            </tr>
+                            <tr>
+                                <td class="text-secondary ps-0 py-2">Email Address</td>
+                                <td class="py-2" th:text="${user != null ? user.email : 'admin@devops.com'}">admin@devops.com</td>
+                            </tr>
+                            <tr>
+                                <td class="text-secondary ps-0 py-2">Account Status</td>
+                                <td class="py-2"><span class="badge bg-success bg-opacity-10 text-success">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-secondary ps-0 py-2">Roles / Permissions</td>
+                                <td class="py-2">
+                                    <span class="badge badge-admin me-1" sec:authorize="hasRole('ADMIN')">ROLE_ADMIN</span>
+                                    <span class="badge badge-user" sec:authorize="hasRole('USER')">ROLE_USER</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- DevOps Status Panel -->
+            <div class="col-lg-6">
+                <div class="glass-card p-4 h-100">
+                    <h3 class="fw-bold mb-4"><i class="bi bi-git text-primary me-2"></i>Deployment Pipeline Details</h3>
+                    <div class="d-flex flex-column gap-3">
+                        <div class="d-flex justify-content-between align-items-center border-bottom border-secondary border-opacity-10 pb-2">
+                            <span class="text-secondary">Build Engine</span>
+                            <span class="fw-bold text-white"><i class="bi bi-award text-warning me-1"></i>Jenkins CI/CD</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center border-bottom border-secondary border-opacity-10 pb-2">
+                            <span class="text-secondary">Container Orchestration</span>
+                            <span class="fw-bold text-info"><i class="bi bi-box-seam me-1"></i>Kubernetes (k8s)</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center border-bottom border-secondary border-opacity-10 pb-2">
+                            <span class="text-secondary">Containerization</span>
+                            <span class="fw-bold text-white"><i class="bi bi-box me-1"></i>Docker Engine</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center pb-2">
+                            <span class="text-secondary">Metrics Aggregator</span>
+                            <span class="fw-bold text-success"><i class="bi bi-graph-up me-1"></i>Prometheus + Grafana</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Script -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/main.js}" src="/js/main.js"></script>
+</body>
+</html>

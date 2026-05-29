@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - DevOps Employee Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom py-3 mb-5">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" th:href="@{/dashboard}">
+                <i class="bi bi-cpu text-primary fs-3 me-2"></i>
+                <span class="fw-bold">DevOps<span>Portal</span></span>
+            </a>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                    <li class="nav-item"><a class="nav-link" th:href="@{/dashboard}"><i class="bi bi-speedometer2 me-1"></i> Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/employees}"><i class="bi bi-people me-1"></i> Employees</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/profile}"><i class="bi bi-person-circle me-1"></i> Profile</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/chat}"><i class="bi bi-chat-dots me-1"></i> Messages <span id="chat-badge" class="badge bg-danger rounded-pill d-none">0</span></a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container pb-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="glass-card p-5">
+                    <div class="d-flex align-items-center justify-content-between mb-4 border-bottom border-secondary border-opacity-10 pb-3">
+                        <div>
+                            <h2 class="fw-bold mb-1"><i class="bi bi-person-gear text-primary me-2"></i>Profile Settings</h2>
+                            <p class="text-secondary mb-0">Update account credentials and info</p>
+                        </div>
+                        <a th:href="@{/profile/change-password}" class="btn btn-outline-custom btn-sm"><i class="bi bi-shield-key me-1"></i> Change Password</a>
+                    </div>
+
+                    <!-- Alerts -->
+                    <div th:if="${param.updateSuccess}" class="alert alert-success border-0 bg-success bg-opacity-10 text-success rounded-3 mb-4" role="alert">
+                        Profile details updated successfully!
+                    </div>
+                    <div th:if="${param.passwordSuccess}" class="alert alert-success border-0 bg-success bg-opacity-10 text-success rounded-3 mb-4" role="alert">
+                        Password changed successfully!
+                    </div>
+                    <div th:if="${error}" class="alert alert-danger border-0 bg-danger bg-opacity-10 text-danger rounded-3 mb-4" role="alert" th:text="${error}">
+                        An error occurred.
+                    </div>
+
+                    <form th:action="@{/profile/update}" method="post">
+                        <div class="mb-3">
+                            <label class="form-label text-secondary fw-semibold">Username</label>
+                            <input type="text" class="form-control form-control-custom text-white-50" th:value="${user.username}" readonly style="cursor: not-allowed;">
+                            <div class="form-text text-secondary-50">Username cannot be changed.</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="firstName" class="form-label text-secondary fw-semibold">First Name</label>
+                                <input type="text" id="firstName" name="firstName" th:value="${user.firstName}" class="form-control form-control-custom" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="lastName" class="form-label text-secondary fw-semibold">Last Name</label>
+                                <input type="text" id="lastName" name="lastName" th:value="${user.lastName}" class="form-control form-control-custom" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="email" class="form-label text-secondary fw-semibold">Email Address</label>
+                            <input type="email" id="email" name="email" th:value="${user.email}" class="form-control form-control-custom" required>
+                        </div>
+
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary-custom">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Script -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/main.js}" src="/js/main.js"></script>
+</body>
+</html>
