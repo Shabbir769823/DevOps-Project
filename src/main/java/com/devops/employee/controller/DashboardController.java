@@ -72,4 +72,9 @@ public class DashboardController {
         
         return "dashboard";
     }
+
+    @GetMapping("/health")
+    public String health() {
+        return "health";
+    }
 }
