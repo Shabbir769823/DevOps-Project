@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tasks - DevOps Employee Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom py-3 mb-5">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" th:href="@{/dashboard}">
+                <i class="bi bi-cpu text-primary fs-3 me-2"></i>
+                <span class="fw-bold">DevOps<span>Portal</span></span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/dashboard}"><i class="bi bi-speedometer2 me-1"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/employees}"><i class="bi bi-people me-1"></i> Employees</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/tasks}"><i class="bi bi-card-checklist me-1"></i> Tasks</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/profile}"><i class="bi bi-person-circle me-1"></i> Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/chat}"><i class="bi bi-chat-dots me-1"></i> Messages <span id="chat-badge" class="badge bg-danger rounded-pill d-none">0</span></a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link" th:href="@{/notifications}">
+                            <i class="bi bi-bell-fill me-1"></i> Notifications 
+                            <span th:if="${unreadNotificationCount > 0}" class="badge bg-danger rounded-pill" th:text="${unreadNotificationCount}">0</span>
+                        </a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center text-secondary">
+                    <span class="me-3" sec:authorize="isAuthenticated()">
+                        Welcome, <strong class="text-white" sec:authentication="name">User</strong>
+                        <span class="badge badge-admin ms-1" sec:authorize="hasRole('ADMIN')">Admin</span>
+                        <span class="badge badge-user ms-1" sec:authorize="!hasRole('ADMIN')">User</span>
+                    </span>
+                    <form th:action="@{/logout}" method="post">
+                        <button type="submit" class="btn btn-outline-custom btn-sm"><i class="bi bi-box-arrow-right me-1"></i> Logout</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container pb-5">
+        <!-- Header Actions -->
+        <div class="row align-items-center g-3 mb-4">
+            <div class="col-md-6">
+                <h1 class="fw-bold mb-1" th:text="${isAdmin ? 'Task Board' : 'My Assigned Work'}">Tasks</h1>
+                <p class="text-secondary" th:text="${isAdmin ? 'Assign tasks to employees and track execution' : 'Track and update your assigned tasks'}"></p>
+            </div>
+            <div class="col-md-6 text-md-end" sec:authorize="hasRole('ADMIN')">
+                <a th:href="@{/tasks/new}" class="btn btn-primary-custom"><i class="bi bi-plus-lg me-1"></i> Assign New Task</a>
+            </div>
+        </div>
+
+        <!-- Alerts -->
+        <div th:if="${param.saveSuccess}" class="alert alert-success border-0 bg-success bg-opacity-10 text-success rounded-3 mb-4" role="alert">
+            Task assigned successfully!
+        </div>
+        <div th:if="${param.statusSuccess}" class="alert alert-success border-0 bg-success bg-opacity-10 text-success rounded-3 mb-4" role="alert">
+            Task status updated successfully!
+        </div>
+        <div th:if="${param.error}" class="alert alert-danger border-0 bg-danger bg-opacity-10 text-danger rounded-3 mb-4" role="alert" th:text="${param.error}">
+            An error occurred.
+        </div>
+
+        <!-- Directory Table -->
+        <div class="glass-card p-4">
+            <div class="table-responsive">
+                <table class="table table-hover table-custom align-middle">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th th:if="${isAdmin}">Assignee</th>
+                            <th th:if="${!isAdmin}">Assigned By</th>
+                            <th>Status</th>
+                            <th>Last Updated</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="task : ${tasks}">
+                            <td class="fw-bold" th:text="${task.id}">1</td>
+                            <td class="fw-semibold" th:text="${task.title}">Deploy DB</td>
+                            <td th:text="${task.description}">Database setup on staging</td>
+                            <td th:if="${isAdmin}" th:text="${task.assignee.firstName + ' ' + task.assignee.lastName}">John Doe</td>
+                            <td th:if="${!isAdmin}" th:text="${task.creator.firstName + ' ' + task.creator.lastName}">Admin User</td>
+                            <td>
+                                <span class="badge" 
+                                      th:classappend="${task.status == 'PENDING' ? 'badge-pending' : (task.status == 'IN_PROGRESS' ? 'badge-progress' : 'badge-completed')}"
+                                      th:text="${task.status}">PENDING</span>
+                            </td>
+                            <td th:text="${#temporals.format(task.updatedAt, 'yyyy-MM-dd HH:mm')}">2026-05-29</td>
+                            <td class="text-end">
+                                <!-- Employee Actions -->
+                                <div th:if="${!isAdmin}" class="btn-group" role="group">
+                                    <form th:if="${task.status == 'PENDING'}" th:action="@{/tasks/status/{id}(id=${task.id})}" method="post" class="d-inline">
+                                        <input type="hidden" name="status" value="IN_PROGRESS">
+                                        <button type="submit" class="btn btn-sm btn-outline-custom text-info"><i class="bi bi-play-fill me-1"></i> Start Work</button>
+                                    </form>
+                                    <form th:if="${task.status == 'IN_PROGRESS'}" th:action="@{/tasks/status/{id}(id=${task.id})}" method="post" class="d-inline">
+                                        <input type="hidden" name="status" value="COMPLETED">
+                                        <button type="submit" class="btn btn-sm btn-outline-custom text-success"><i class="bi bi-check-lg me-1"></i> Complete</button>
+                                    </form>
+                                    <span th:if="${task.status == 'COMPLETED'}" class="text-success"><i class="bi bi-check-circle-fill"></i> Completed</span>
+                                </div>
+                                <!-- Admin Actions -->
+                                <div th:if="${isAdmin}">
+                                    <span th:if="${task.status == 'COMPLETED'}" class="text-success"><i class="bi bi-check-circle-fill"></i> Completed</span>
+                                    <span th:if="${task.status == 'PENDING'}" class="text-warning"><i class="bi bi-hourglass-split"></i> Pending</span>
+                                    <span th:if="${task.status == 'IN_PROGRESS'}" class="text-info"><i class="bi bi-gear-fill"></i> In Progress</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(tasks)}">
+                            <td th:colspan="${isAdmin ? 8 : 7}" class="text-center py-5 text-secondary">
+                                <i class="bi bi-card-checklist fs-1 d-block mb-3"></i>
+                                No tasks assigned.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Script -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/main.js}" src="/js/main.js"></script>
+</body>
+</html>
