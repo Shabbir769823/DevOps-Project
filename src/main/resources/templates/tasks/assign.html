@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Change Password - DevOps Employee Portal</title>
+    <title>Assign Task - DevOps Employee Portal</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <link th:href="@{/css/style.css}" href="/css/style.css" rel="stylesheet">
@@ -28,10 +28,10 @@
                         <a class="nav-link" th:href="@{/employees}"><i class="bi bi-people me-1"></i> Employees</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/tasks}"><i class="bi bi-card-checklist me-1"></i> Tasks</a>
+                        <a class="nav-link active" th:href="@{/tasks}"><i class="bi bi-card-checklist me-1"></i> Tasks</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" th:href="@{/profile}"><i class="bi bi-person-circle me-1"></i> Profile</a>
+                        <a class="nav-link" th:href="@{/profile}"><i class="bi bi-person-circle me-1"></i> Profile</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" th:href="@{/chat}"><i class="bi bi-chat-dots me-1"></i> Messages <span id="chat-badge" class="badge bg-danger rounded-pill d-none">0</span></a>
@@ -60,32 +60,50 @@
     <!-- Main Content -->
     <div class="container pb-5">
         <div class="row justify-content-center">
-            <div class="col-lg-6">
-                <div class="glass-card p-5">
-                    <div class="mb-4">
-                        <h2 class="fw-bold"><i class="bi bi-key text-primary me-2"></i>Change Password</h2>
-                        <p class="text-secondary">Security credentials update</p>
-                    </div>
+            <div class="col-lg-8">
+                <!-- Back Link -->
+                <div class="mb-4">
+                    <a th:href="@{/tasks}" class="text-secondary text-decoration-none d-inline-flex align-items-center">
+                        <i class="bi bi-arrow-left me-1"></i> Back to Task Board
+                    </a>
+                </div>
 
-                    <!-- Alerts -->
+                <!-- Form Card -->
+                <div class="glass-card p-5">
+                    <h2 class="fw-bold mb-1"><i class="bi bi-clipboard-plus text-primary me-2"></i>Assign New Task</h2>
+                    <p class="text-secondary mb-5">Create a task assignment and allocate it to an employee user.</p>
+
+                    <!-- Alert error -->
                     <div th:if="${error}" class="alert alert-danger border-0 bg-danger bg-opacity-10 text-danger rounded-3 mb-4" role="alert" th:text="${error}">
                         An error occurred.
                     </div>
 
-                    <form th:action="@{/profile/change-password}" method="post">
-                        <div class="mb-3">
-                            <label for="oldPassword" class="form-label text-secondary fw-semibold">Current Password</label>
-                            <input type="password" id="oldPassword" name="oldPassword" class="form-control form-control-custom" placeholder="••••••••" required>
-                        </div>
-
+                    <form th:action="@{/tasks/save}" th:object="${task}" method="post">
+                        <!-- Title -->
                         <div class="mb-4">
-                            <label for="newPassword" class="form-label text-secondary fw-semibold">New Password</label>
-                            <input type="password" id="newPassword" name="newPassword" class="form-control form-control-custom" placeholder="••••••••" required>
+                            <label for="title" class="form-label text-secondary fw-semibold">Task Title</label>
+                            <input type="text" th:field="*{title}" id="title" class="form-control form-control-custom" placeholder="e.g. Deploy Kubernetes Service" required>
                         </div>
 
-                        <div class="d-flex gap-3 justify-content-end">
-                            <a th:href="@{/profile}" class="btn btn-outline-custom">Cancel</a>
-                            <button type="submit" class="btn btn-primary-custom">Update Password</button>
+                        <!-- Description -->
+                        <div class="mb-4">
+                            <label for="description" class="form-label text-secondary fw-semibold">Task Description / Instructions</label>
+                            <textarea th:field="*{description}" id="description" class="form-control form-control-custom" rows="5" placeholder="Provide detailed steps or descriptions of the work..." required></textarea>
+                        </div>
+
+                        <!-- Assignee -->
+                        <div class="mb-5">
+                            <label for="assigneeId" class="form-label text-secondary fw-semibold">Assignee (Employee Account)</label>
+                            <select name="assigneeId" id="assigneeId" class="form-select form-control-custom" required>
+                                <option value="" disabled selected>-- Select Employee User --</option>
+                                <option th:each="u : ${assignees}" th:value="${u.id}" th:text="${u.firstName + ' ' + u.lastName + ' (' + u.username + ')'}"></option>
+                            </select>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-flex justify-content-end gap-3">
+                            <a th:href="@{/tasks}" class="btn btn-outline-custom">Cancel</a>
+                            <button type="submit" class="btn btn-primary-custom px-4">Assign Task</button>
                         </div>
                     </form>
                 </div>

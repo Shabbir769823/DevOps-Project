@@ -28,10 +28,19 @@
                         <a class="nav-link" th:href="@{/employees}"><i class="bi bi-people me-1"></i> Employees</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" th:href="@{/tasks}"><i class="bi bi-card-checklist me-1"></i> Tasks</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" th:href="@{/profile}"><i class="bi bi-person-circle me-1"></i> Profile</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" th:href="@{/chat}"><i class="bi bi-chat-dots me-1"></i> Messages <span id="chat-badge" class="badge bg-danger rounded-pill d-none">0</span></a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link" th:href="@{/notifications}">
+                            <i class="bi bi-bell-fill me-1"></i> Notifications 
+                            <span th:if="${unreadNotificationCount > 0}" class="badge bg-danger rounded-pill" th:text="${unreadNotificationCount}">0</span>
+                        </a>
                     </li>
                 </ul>
                 <div class="d-flex align-items-center text-secondary">
@@ -68,16 +77,22 @@
             </div>
             <div class="col-md-4">
                 <div class="glass-card stat-widget text-center">
-                    <div class="stat-icon text-success"><i class="bi bi-check-circle"></i></div>
-                    <div class="stat-value text-success">UP</div>
-                    <div class="stat-label">Application Health Check</div>
+                    <div class="stat-icon text-warning"><i class="bi bi-card-checklist text-warning"></i></div>
+                    <div sec:authorize="hasRole('ADMIN')">
+                        <div class="stat-value text-warning" th:text="${activeTaskCount}">0</div>
+                        <div class="stat-label">Active Tasks (Assigned)</div>
+                    </div>
+                    <div sec:authorize="!hasRole('ADMIN')">
+                        <div class="stat-value text-warning" th:text="${pendingTaskCount}">0</div>
+                        <div class="stat-label">My Pending Tasks</div>
+                    </div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="glass-card stat-widget text-center">
-                    <div class="stat-icon text-warning"><i class="bi bi-activity"></i></div>
-                    <div class="stat-value text-warning">Active</div>
-                    <div class="stat-label">Prometheus Metric Collector</div>
+                    <div class="stat-icon text-success"><i class="bi bi-check-circle"></i></div>
+                    <div class="stat-value text-success">UP</div>
+                    <div class="stat-label">Application Health Check</div>
                 </div>
             </div>
         </div>
